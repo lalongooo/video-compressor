@@ -7,7 +7,8 @@
     <!-- From: file:/C:/jhernandez/dev/java/android/projects/VideoCompressor/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">VideoCompressor</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="compress_video">Compress video</string>
+    <string name="select_file">Select file</string>
     <!-- From: file:/C:/jhernandez/dev/java/android/projects/VideoCompressor/app/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppBaseTheme" parent="android:Theme.Light">
