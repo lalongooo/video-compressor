@@ -464,7 +464,7 @@ public class MediaController {
 //                    }
                 }
                 if (!error) {
-//                    readAndWriteTrack(messageObject, extractor, mediaMuxer, info, videoStartTime, endTime, cacheFile, true);
+                    readAndWriteTrack(extractor, mediaMuxer, info, videoStartTime, endTime, cacheFile, true);
                 }
             } catch (Exception e) {
                 error = true;
@@ -611,5 +611,58 @@ public class MediaController {
         }
     }
 
+    @TargetApi(16)
+    private long readAndWriteTrack(MediaExtractor extractor, MP4Builder mediaMuxer, MediaCodec.BufferInfo info, long start, long end, File file, boolean isAudio) throws Exception {
+        int trackIndex = selectTrack(extractor, isAudio);
+        if (trackIndex >= 0) {
+            extractor.selectTrack(trackIndex);
+            MediaFormat trackFormat = extractor.getTrackFormat(trackIndex);
+            int muxerTrackIndex = mediaMuxer.addTrack(trackFormat, isAudio);
+            int maxBufferSize = trackFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+            boolean inputDone = false;
+            if (start > 0) {
+                extractor.seekTo(start, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+            } else {
+                extractor.seekTo(0, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+            }
+            ByteBuffer buffer = ByteBuffer.allocateDirect(maxBufferSize);
+            long startTime = -1;
+
+            while (!inputDone) {
+
+                boolean eof = false;
+                int index = extractor.getSampleTrackIndex();
+                if (index == trackIndex) {
+                    info.size = extractor.readSampleData(buffer, 0);
+
+                    if (info.size < 0) {
+                        info.size = 0;
+                        eof = true;
+                    } else {
+                        info.presentationTimeUs = extractor.getSampleTime();
+                        if (start > 0 && startTime == -1) {
+                            startTime = info.presentationTimeUs;
+                        }
+                        if (end < 0 || info.presentationTimeUs < end) {
+                            info.offset = 0;
+                            info.flags = extractor.getSampleFlags();
+                            extractor.advance();
+                        } else {
+                            eof = true;
+                        }
+                    }
+                } else if (index == -1) {
+                    eof = true;
+                }
+                if (eof) {
+                    inputDone = true;
+                }
+            }
+
+            extractor.unselectTrack(trackIndex);
+            return startTime;
+        }
+        return -1;
+    }
 
 }
