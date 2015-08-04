@@ -52,10 +52,10 @@ public class MediaController {
         int resultWidth = 640;
         int resultHeight = 360;
         int rotationValue = 90;
-        int originalWidth = 640;
-        int originalHeight = 480;
-        int bitrate = 800000;
-        int rotateRender = 0;
+        int originalWidth = 1920;
+        int originalHeight = 1080;
+        int bitrate = 450000;
+        int rotateRender = 90;
         Log.d("build", Build.VERSION.SDK_INT + "");
         if (Build.VERSION.SDK_INT < 18 && resultHeight > resultWidth && resultWidth != originalWidth && resultHeight != originalHeight) {
             int temp = resultHeight;
@@ -111,12 +111,7 @@ public class MediaController {
                 movie.setSize(resultWidth, resultHeight);
                 mediaMuxer = new MP4Builder().createMovie(movie);
                 extractor = new MediaExtractor();
-//                extractor.setDataSource(inputFile.toString());                                
-//                extractor.setDataSource(path);
-
-                FileInputStream fis = new FileInputStream(inputFile);
-                FileDescriptor fd = fis.getFD();
-                extractor.setDataSource(fd);
+                extractor.setDataSource(inputFile.toString());
 
 
                 if (resultWidth != originalWidth || resultHeight != originalHeight) {
@@ -646,6 +641,9 @@ public class MediaController {
                         if (end < 0 || info.presentationTimeUs < end) {
                             info.offset = 0;
                             info.flags = extractor.getSampleFlags();
+                            if (mediaMuxer.writeSampleData(muxerTrackIndex, buffer, info, isAudio)) {
+                                // didWriteData(messageObject, file, false, false);
+                            }
                             extractor.advance();
                         } else {
                             eof = true;
