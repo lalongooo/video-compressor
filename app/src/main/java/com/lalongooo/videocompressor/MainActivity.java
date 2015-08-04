@@ -70,7 +70,8 @@ public class MainActivity extends Activity {
 
                             File tempFile = FileUtils.saveTempFile(displayName, this, uri);
                             editText.setText(tempFile.getPath());
-                            MediaController.VideoConvertRunnable.runConversion(tempFile.getPath());
+                            //MediaController.VideoConvertRunnable.runConversion(tempFile.getPath());
+                            MediaController.getInstance().scheduleVideoConvert(tempFile.getPath());
 
                         }
                     } finally {
