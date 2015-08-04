@@ -224,7 +224,7 @@ public class MediaController {
     }
 
     @TargetApi(16)
-    private boolean convertVideo(final String path) {
+    public boolean convertVideo(final String path) {
 
         long startTime = -1;
         long endTime = -1;

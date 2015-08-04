@@ -33,4 +33,21 @@
         android:onClick="compress"
         android:text="@string/compress_video" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/please_notice"
+        android:id="@+id/textView"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:visibility="invisible"
+        android:layout_below="@+id/btnCompressVideo"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

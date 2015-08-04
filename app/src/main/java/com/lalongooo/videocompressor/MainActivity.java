@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.lalongooo.videocompressor.file.FileUtils;
 import com.lalongooo.videocompressor.video.MediaController;
@@ -20,14 +22,17 @@ import java.io.File;
 
 public class MainActivity extends Activity {
 
-    private EditText editText;
     private static final int RESULT_CODE_COMPRESS_VIDEO = 3;
     private static final String TAG = "MainActivity";
+    private EditText editText;
+    private ProgressBar progressBar;
+    private File tempFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         editText = (EditText) findViewById(R.id.editText);
 
         findViewById(R.id.btnSelectVideo).setOnClickListener(new View.OnClickListener() {
@@ -68,10 +73,8 @@ public class MainActivity extends Activity {
                             }
                             Log.i(TAG, "Size: " + size);
 
-                            File tempFile = FileUtils.saveTempFile(displayName, this, uri);
+                            tempFile = FileUtils.saveTempFile(displayName, this, uri);
                             editText.setText(tempFile.getPath());
-                            //MediaController.VideoConvertRunnable.runConversion(tempFile.getPath());
-                            MediaController.getInstance().scheduleVideoConvert(tempFile.getPath());
 
                         }
                     } finally {
@@ -84,7 +87,51 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void compress(View v) {
-        MediaController.VideoConvertRunnable.runConversion(editText.getText().toString());
+    private void deleteTempFile(){
+        if(tempFile != null && tempFile.exists()){
+            tempFile.delete();
+        }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        deleteTempFile();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deleteTempFile();
+    }
+
+    public void compress(View v) {
+//        MediaController.getInstance().scheduleVideoConvert(tempFile.getPath());
+        new VideoCompressor().execute();
+    }
+
+    class VideoCompressor extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+            Log.d(TAG,"Start video compression");
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return MediaController.getInstance().convertVideo(tempFile.getPath());
+        }
+
+        @Override
+        protected void onPostExecute(Boolean compressed) {
+            super.onPostExecute(compressed);
+            progressBar.setVisibility(View.GONE);
+            if(compressed){
+                Log.d(TAG,"Compression successfully!");
+            }
+        }
+    }
+
 }

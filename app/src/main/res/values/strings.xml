@@ -4,5 +4,6 @@
     <string name="app_name">VideoCompressor</string>
     <string name="select_file">Select file</string>
     <string name="compress_video">Compress video</string>
+    <string name="please_notice">The video selected is first copied to the Temp directory, then is compressed and moved to the Compressed Videos directory and finally the Temp directory is empty.</string>
 
 </resources>
