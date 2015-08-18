@@ -11,7 +11,7 @@ public class VideoCompressorApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        FileUtils.createLivePostApplicationFolder();
+        FileUtils.createApplicationFolder();
     }
 
 }

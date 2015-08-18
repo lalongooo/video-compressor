@@ -21,7 +21,7 @@ public class FileUtils {
 
     private static final String TAG = "FileUtils";
 
-    public static void createLivePostApplicationFolder() {
+    public static void createApplicationFolder() {
         File f = new File(Environment.getExternalStorageDirectory(), File.separator + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME);
         f.mkdirs();
         f = new File(Environment.getExternalStorageDirectory(), File.separator + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME + Config.VIDEO_COMPRESSOR_COMPRESSED_VIDEOS_DIR);
