@@ -2,13 +2,12 @@ package com.lalongooo.videocompressor.video;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.util.Log;
 import com.lalongooo.videocompressor.Config;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -226,16 +224,21 @@ public class MediaController {
     @TargetApi(16)
     public boolean convertVideo(final String path) {
 
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(path);
+        String width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+        String height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+
         long startTime = -1;
         long endTime = -1;
 
         int resultWidth = 640;
         int resultHeight = 360;
 
-        int rotationValue = 0;
-
-        int originalWidth = 1920;
-        int originalHeight = 1080;
+        int rotationValue = Integer.valueOf(rotation);
+        int originalWidth = Integer.valueOf(width);
+        int originalHeight = Integer.valueOf(height);
 
         int bitrate = 450000;
         int rotateRender = 0;
